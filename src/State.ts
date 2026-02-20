@@ -1,51 +1,51 @@
-export type StoreUpdate<T> = (value: T) => T;
-export type StoreUpdateCallback<T> = (store: Store<T>) => void;
+export type StateUpdate<T> = (value: T) => T;
+export type StateUpdateCallback<T> = (state: State<T>) => void;
 
 /**
  * Data container allowing for subscription to its updates.
  */
-export class Store<T> {
+export class State<T> {
   current: T;
   previous: T;
-  callbacks: Record<string, Set<StoreUpdateCallback<T>>> = {};
+  callbacks: Record<string, Set<StateUpdateCallback<T>>> = {};
   revision = -1;
   constructor(value: T) {
     this.previous = value;
     this.current = value;
   }
   /**
-   * Adds an event handler to the store.
+   * Adds an event handler to the state.
    *
-   * Handlers of the `"update"` event are called whenever the store value
+   * Handlers of the `"update"` event are called whenever the state value
    * is updated via `setValue(value)`.
    *
    * Returns an unsubscription function. Once it's invoked, the given
-   * `callback` is removed from the store and no longer called when
-   * the store emits the corresponding event.
+   * `callback` is removed from the state and no longer called when
+   * the state emits the corresponding event.
    */
-  on(event: string, callback: StoreUpdateCallback<T>) {
-    (this.callbacks[event] ??= new Set<StoreUpdateCallback<T>>()).add(callback);
+  on(event: string, callback: StateUpdateCallback<T>) {
+    (this.callbacks[event] ??= new Set<StateUpdateCallback<T>>()).add(callback);
 
     return () => this.off(event, callback);
   }
   /**
-   * Adds a one-time event handler to the store: once the event is emitted,
-   * the callback is called and removed from the store.
+   * Adds a one-time event handler to the state: once the event is emitted,
+   * the callback is called and removed from the state.
    */
-  once(event: string, callback: StoreUpdateCallback<T>) {
-    let oneTimeCallback: StoreUpdateCallback<T> = (store) => {
+  once(event: string, callback: StateUpdateCallback<T>) {
+    let oneTimeCallback: StateUpdateCallback<T> = (state) => {
       this.off(event, oneTimeCallback);
-      callback(store);
+      callback(state);
     };
 
     return this.on(event, oneTimeCallback);
   }
   /**
-   * Removes `callback` from the store's handlers of the given event,
+   * Removes `callback` from the state's handlers of the given event,
    * and removes all handlers of the given event if `callback` is not
    * specified.
    */
-  off(event: string, callback?: StoreUpdateCallback<T>) {
+  off(event: string, callback?: StateUpdateCallback<T>) {
     if (callback === undefined) delete this.callbacks[event];
     else this.callbacks[event]?.delete(callback);
   }
@@ -55,18 +55,18 @@ export class Store<T> {
     }
   }
   /**
-   * Returns the current store value.
+   * Returns the current state value.
    */
   getValue() {
     return this.current;
   }
   /**
-   * Updates the store value.
+   * Updates the state value.
    *
    * @param update - A new value or an update function `(value) => nextValue`
-   * that returns a new store value based on the current store value.
+   * that returns a new state value based on the current state value.
    */
-  setValue(update: T | StoreUpdate<T>) {
+  setValue(update: T | StateUpdate<T>) {
     this.previous = this.current;
     this.current = update instanceof Function ? update(this.current) : update;
     this.revision = Math.random();
