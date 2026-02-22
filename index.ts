@@ -1,2 +1,2 @@
-export * from "./src/isState.ts";
-export * from "./src/State.ts";
+export * from "./src/isPortableState.ts";
+export * from "./src/PortableState.ts";

@@ -1,10 +1,10 @@
-import type { State } from "./State.ts";
+import type { PortableState } from "./PortableState.ts";
 
 /**
  * Serves as a replacement to `instanceof State` which can lead to a false
  * negative when the `State` class comes from different package dependencies.
  */
-export function isState<T>(x: unknown): x is State<T> {
+export function isPortableState<T>(x: unknown): x is PortableState<T> {
   return (
     x !== null &&
     typeof x === "object" &&

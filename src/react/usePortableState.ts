@@ -1,17 +1,17 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { State } from "../State.ts";
-import { isState } from "../isState.ts";
+import { PortableState } from "../PortableState.ts";
+import { isPortableState } from "../isPortableState.ts";
 
-export type SetStoreValue<T> = State<T>["setValue"];
+export type SetStoreValue<T> = PortableState<T>["setValue"];
 export type ShouldUpdateCallback<T> = (nextValue: T, prevValue: T) => boolean;
 export type ShouldUpdate<T> = boolean | ShouldUpdateCallback<T>;
 
 export function usePortableState<T>(
-  state: State<T>,
+  state: PortableState<T>,
   shouldUpdate: ShouldUpdate<T> = true,
 ): [T, SetStoreValue<T>] {
-  if (!isState<T>(state))
-    throw new Error("'state' is not an instance of State");
+  if (!isPortableState<T>(state))
+    throw new Error("'state' is not an instance of PortableState");
 
   let [, setRevision] = useState(-1);
 

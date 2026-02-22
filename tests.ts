@@ -1,4 +1,4 @@
-import { isState, State } from "./index.ts";
+import { isPortableState, PortableState } from "./index.ts";
 
 let testIndex = 0;
 
@@ -15,7 +15,7 @@ function assert(value: unknown, expectedValue: unknown) {
   }
 }
 
-let state = new State(10);
+let state = new PortableState(10);
 
 let testValue = [100, -3];
 let unsubscribe = [
@@ -27,8 +27,8 @@ let unsubscribe = [
   }),
 ];
 
-assert(isState(state), true);
-assert(isState({}), false);
+assert(isPortableState(state), true);
+assert(isPortableState({}), false);
 
 assert(state.current, 10);
 assert(state._callbacks.update.size, 2);

@@ -4,7 +4,7 @@ export type StateEventCallback = () => boolean | undefined | void;
 /**
  * Data container allowing for subscription to its updates.
  */
-export class State<T> {
+export class PortableState<T> {
   _current: T;
   _previous: T;
   _callbacks: Record<string, Set<StateEventCallback>> = {};
