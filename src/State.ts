@@ -5,13 +5,15 @@ export type StateEventCallback = () => boolean | undefined | void;
  * Data container allowing for subscription to its updates.
  */
 export class State<T> {
-  _value: T;
+  _current: T;
+  _previous: T;
   _callbacks: Record<string, Set<StateEventCallback>> = {};
   _revision = -1;
   _active = true;
 
   constructor(value: T) {
-    this._value = value;
+    this._current = value;
+    this._previous = value;
   }
   /**
    * Adds an event handler to the state.
@@ -74,13 +76,17 @@ export class State<T> {
   setValue(update: T | StateUpdate<T>): void {
     if (!this._active || !this.emit("updatestart")) return;
 
-    this._value = update instanceof Function ? update(this._value) : update;
+    this._previous = this._current;
+    this._current = update instanceof Function ? update(this._current) : update;
     this._revision = Math.random();
 
     this.emit("update");
   }
-  get value(): T {
-    return this._value;
+  get current(): T {
+    return this._current;
+  }
+  get previous(): T {
+    return this._previous;
   }
   get revision() {
     return this._revision;
