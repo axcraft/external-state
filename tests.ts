@@ -7,17 +7,22 @@ function assert(value: unknown, expectedValue: unknown) {
 
   console.log(`000${++testIndex}`.slice(-3), valid ? "Passed" : "Failed");
 
-  if (!valid) throw new Error(`Expected ${expectedValue}, got ${value}.`);
+  if (!valid) {
+    console.error(`Expected: ${JSON.stringify(expectedValue)}`);
+    console.error(`Got: ${JSON.stringify(value)}`);
+
+    throw new Error("Test value mismatch");
+  }
 }
 
 let state = new State(10);
 
 let testValue = [100, -3];
 let unsubscribe = [
-  state.on("update", ({ current }) => {
+  state.on("update", ({ current = 0 }) => {
     testValue[0] += current;
   }),
-  state.on("update", ({ current }) => {
+  state.on("update", ({ current = 1 }) => {
     testValue[1] *= current;
   }),
 ];
@@ -27,6 +32,8 @@ assert(isState({}), false);
 
 assert(state.getValue(), 10);
 assert(state.callbacks.update.size, 2);
+assert(testValue[0], 100);
+assert(testValue[1], -3);
 
 state.setValue(2);
 assert(state.getValue(), 2);
@@ -44,6 +51,11 @@ assert(state.callbacks.update.size, 1);
 state.setValue(12);
 assert(state.getValue(), 12);
 assert(testValue[0], 89);
+assert(testValue[1], 150);
+
+state.setValue((value) => value - 2);
+assert(state.getValue(), 10);
+assert(testValue[0], 99);
 assert(testValue[1], 150);
 
 console.log();
