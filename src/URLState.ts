@@ -94,10 +94,11 @@ export class URLState extends PortableState<string, NavigationOptions> {
     });
   }
   toHref(x: string) {
-    let url = new QuasiURL(x);
+    if (typeof window === "undefined") return x;
 
-    if (typeof window !== undefined && url.origin === window.location.origin)
-      url.origin = "";
+    let url = new QuasiURL(x || window.location.href);
+
+    if (url.origin === window.location.origin) url.origin = "";
 
     return url.href;
   }
