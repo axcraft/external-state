@@ -38,13 +38,13 @@ export class URLState extends PortableState<string, NavigationOptions> {
       referrer: this.previous,
     };
 
-    if (this.emit("navigationstart", navigationOptions)) {
+    if (this.emit("updatestart", navigationOptions)) {
       this._assignValue(href);
-      this._transition(navigationOptions);
-      this.emit("update", navigationOptions);
 
-      if (this.emit("navigationend", navigationOptions))
+      if (this.emit("update", navigationOptions)) {
+        this._transition(navigationOptions);
         this._complete(navigationOptions);
+      }
     }
   }
   _transition(options = defaultNavigationOptions) {

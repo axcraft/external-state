@@ -32,9 +32,7 @@ export function usePortableState<T, P extends EventPayload = EventPayload>(
       if (shouldUpdate.current) setRevision(Math.random());
     };
 
-    let unsubscribe = state.on("update", (payload) => {
-      callback(render, payload);
-    });
+    let unsubscribe = state.on("update", (payload) => callback(render, payload));
 
     if (state.revision !== initialStateRevision.current)
       setRevision(Math.random());
