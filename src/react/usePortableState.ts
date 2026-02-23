@@ -21,13 +21,17 @@ export function usePortableState<T, P extends EventPayload>(
 
   let setValue = useMemo(() => state.setValue.bind(state), [state]);
   let initialStoreRevision = useRef(state.revision);
+  let shouldUpdate = useRef(false);
 
   useEffect(() => {
     // Allow state instances to hook into the effect
     state.emit("effect");
 
+    shouldUpdate.current = true;
+
     let render = () => {
-      setRevision(Math.random());
+      // Use `setRevision()` as long as the component is mounted
+      if (shouldUpdate.current) setRevision(Math.random());
     };
 
     let unsubscribe = state.on("update", (payload) => {
@@ -40,6 +44,7 @@ export function usePortableState<T, P extends EventPayload>(
     return () => {
       unsubscribe();
       initialStoreRevision.current = state.revision;
+      shouldUpdate.current = false;
     };
   }, [state, callback]);
 
