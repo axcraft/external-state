@@ -5,8 +5,6 @@ import { EventPayload } from "../types/EventPayload.ts";
 import { RenderCallback } from "../types/RenderCallback.ts";
 
 export type SetPortableStateValue<T> = PortableState<T>["setValue"];
-export type ShouldUpdateCallback<T> = (nextValue: T, prevValue: T) => boolean;
-export type ShouldUpdate<T> = boolean | ShouldUpdateCallback<T>;
 
 const defaultRenderCallback = (render: () => void) => render();
 
