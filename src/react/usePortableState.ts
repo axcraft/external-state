@@ -4,7 +4,7 @@ import { isPortableState } from "../isPortableState.ts";
 import { EventPayload } from "../types/EventPayload.ts";
 import { RenderCallback } from "../types/RenderCallback.ts";
 
-export type SetStoreValue<T> = PortableState<T>["setValue"];
+export type SetPortableStateValue<T> = PortableState<T>["setValue"];
 export type ShouldUpdateCallback<T> = (nextValue: T, prevValue: T) => boolean;
 export type ShouldUpdate<T> = boolean | ShouldUpdateCallback<T>;
 
@@ -13,14 +13,14 @@ const defaultRenderCallback = (render: () => void) => render();
 export function usePortableState<T, P extends EventPayload>(
   state: PortableState<T, P>,
   callback: RenderCallback<P> = defaultRenderCallback,
-): [T, SetStoreValue<T>] {
+): [T, SetPortableStateValue<T>] {
   if (!isPortableState<T>(state))
     throw new Error("'state' is not an instance of PortableState");
 
   let [, setRevision] = useState(-1);
 
   let setValue = useMemo(() => state.setValue.bind(state), [state]);
-  let initialStoreRevision = useRef(state.revision);
+  let initialStateRevision = useRef(state.revision);
   let shouldUpdate = useRef(false);
 
   useEffect(() => {
@@ -38,12 +38,12 @@ export function usePortableState<T, P extends EventPayload>(
       callback(render, payload);
     });
 
-    if (state.revision !== initialStoreRevision.current)
+    if (state.revision !== initialStateRevision.current)
       setRevision(Math.random());
 
     return () => {
       unsubscribe();
-      initialStoreRevision.current = state.revision;
+      initialStateRevision.current = state.revision;
       shouldUpdate.current = false;
     };
   }, [state, callback]);
