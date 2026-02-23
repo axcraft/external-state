@@ -1,15 +1,15 @@
-import { StateEventPayload } from "./types/StateEventPayload.ts";
+import { EventCallback } from "./types/EventCallback.ts";
+import { EventPayload } from "./types/EventPayload.ts";
 
-export type StateEventCallback<T extends StateEventPayload> = (event: T | undefined) => boolean | undefined | void;
 export type StateUpdate<T> = (value: T) => T;
 
 /**
  * Data container allowing for subscription to its updates.
  */
-export class PortableState<Value, Payload extends StateEventPayload = StateEventPayload> {
+export class PortableState<Value, Payload extends EventPayload = EventPayload> {
   _current: Value;
   _previous: Value;
-  _callbacks: Record<string, Set<StateEventCallback<Payload>>> = {};
+  _callbacks: Record<string, Set<EventCallback<Payload>>> = {};
   _revision = -1;
   _active = true;
 
@@ -27,8 +27,8 @@ export class PortableState<Value, Payload extends StateEventPayload = StateEvent
    * `callback` is removed from the state and no longer called when
    * the state emits the corresponding event.
    */
-  on(event: string, callback: StateEventCallback<Payload>) {
-    (this._callbacks[event] ??= new Set<StateEventCallback<Payload>>()).add(callback);
+  on(event: string, callback: EventCallback<Payload>) {
+    (this._callbacks[event] ??= new Set<EventCallback<Payload>>()).add(callback);
 
     return () => this.off(event, callback);
   }
@@ -36,8 +36,8 @@ export class PortableState<Value, Payload extends StateEventPayload = StateEvent
    * Adds a one-time event handler to the state: once the event is emitted,
    * the callback is called and removed from the state.
    */
-  once(event: string, callback: StateEventCallback<Payload>) {
-    let oneTimeCallback: StateEventCallback<Payload> = (payload) => {
+  once(event: string, callback: EventCallback<Payload>) {
+    let oneTimeCallback: EventCallback<Payload> = (payload) => {
       this.off(event, oneTimeCallback);
       callback(payload);
     };
@@ -49,7 +49,7 @@ export class PortableState<Value, Payload extends StateEventPayload = StateEvent
    * and removes all handlers of the given event if `callback` is not
    * specified.
    */
-  off(event: string, callback?: StateEventCallback<Payload>) {
+  off(event: string, callback?: EventCallback<Payload>) {
     if (callback === undefined) delete this._callbacks[event];
     else this._callbacks[event]?.delete(callback);
   }

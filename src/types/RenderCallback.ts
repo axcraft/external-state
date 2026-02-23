@@ -1,3 +1,3 @@
-import { StateEventPayload } from "./StateEventPayload.ts";
+import { EventPayload } from "./EventPayload.ts";
 
-export type RenderCallback<P extends StateEventPayload> = (render: () => void, payload?: P) => void;
+export type RenderCallback<P extends EventPayload> = (render: () => void, payload?: P) => void;
