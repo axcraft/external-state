@@ -3,11 +3,12 @@ import { PortableState } from "../PortableState.ts";
 import { isPortableState } from "../isPortableState.ts";
 import { EventPayload } from "../types/EventPayload.ts";
 import { RenderCallback } from "../types/RenderCallback.ts";
-import { defaultRenderCallback } from "../const/defaultRenderCallback.ts";
 
 export type SetStoreValue<T> = PortableState<T>["setValue"];
 export type ShouldUpdateCallback<T> = (nextValue: T, prevValue: T) => boolean;
 export type ShouldUpdate<T> = boolean | ShouldUpdateCallback<T>;
+
+const defaultRenderCallback = (render: () => void) => render();
 
 export function usePortableState<T, P extends EventPayload>(
   state: PortableState<T, P>,
