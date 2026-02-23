@@ -33,9 +33,9 @@ export class Route extends PortableState<string, NavigationOptions> {
     let href = this.toHref(this._resolveValue(update));
 
     let navigationOptions = {
+      ...payload,
       href,
       referrer: this.previous,
-      ...payload,
     };
 
     if (this.emit("navigationstart", navigationOptions)) {
@@ -106,5 +106,60 @@ export class Route extends PortableState<string, NavigationOptions> {
   }
   get previous() {
     return this.toHref(this._previous);
+  }
+  navigate(options = defaultNavigationOptions) {
+    if (options?.href) this.setValue(options.href, options);
+  }
+  assign(url: string) {
+    this.navigate({ href: url });
+  }
+  replace(url: string) {
+    this.navigate({ href: url, history: "replace" });
+  }
+  reload() {
+    this.assign(this._current);
+  }
+  go(delta: number) {
+    if (typeof window !== "undefined" && window.history)
+      window.history.go(delta);
+  }
+  back() {
+    this.go(-1);
+  }
+  forward() {
+    this.go(1);
+  }
+  get href() {
+    return this.current;
+  }
+  set href(value: string) {
+    this.assign(value);
+  }
+  get pathname(): string {
+    return new QuasiURL(this._current).pathname;
+  }
+  set pathname(value: string) {
+    let url = new QuasiURL(this._current);
+    url.pathname = value;
+    this.assign(url.href);
+  }
+  get search(): string {
+    return new QuasiURL(this._current).search;
+  }
+  set search(value: string | URLSearchParams) {
+    let url = new QuasiURL(this._current);
+    url.search = value;
+    this.assign(url.href);
+  }
+  get hash() {
+    return new QuasiURL(this._current).hash;
+  }
+  set hash(value: string) {
+    let url = new QuasiURL(this._current);
+    url.hash = value;
+    this.assign(url.href);
+  }
+  toString() {
+    return this.current;
   }
 }
