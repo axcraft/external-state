@@ -10,16 +10,14 @@ export type StateUpdate<T> = (value: T) => T;
  * Data container allowing for subscription to its updates.
  */
 export class ExternalState<Value, Payload extends EventPayload = EventPayload> {
-  _current: Value;
-  _previous: Value;
+  _value: Value;
   _callbacks: Record<string, Set<EventCallback<Payload>>> = {};
   _revision = -1;
   _active = true;
   eventAliases: Record<string, string> = {};
 
   constructor(value: Value) {
-    this._current = value;
-    this._previous = value;
+    this._value = value;
   }
   /**
    * Adds an event handler to the state.
@@ -81,12 +79,14 @@ export class ExternalState<Value, Payload extends EventPayload = EventPayload> {
     return true;
   }
   _resolveValue(update: Value | StateUpdate<Value>) {
-    return update instanceof Function ? update(this._current) : update;
+    return update instanceof Function ? update(this._value) : update;
   }
   _assignValue(value: Value) {
-    this._previous = this._current;
-    this._current = value;
+    this._value = value;
     this._revision = Math.random();
+  }
+  getValue() {
+    return this._value;
   }
   /**
    * Updates the state value.
@@ -125,12 +125,6 @@ export class ExternalState<Value, Payload extends EventPayload = EventPayload> {
   }
   _complete(_payload?: Payload): boolean | undefined | void {
     return true;
-  }
-  get current(): Value {
-    return this._current;
-  }
-  get previous(): Value {
-    return this._previous;
   }
   get revision() {
     return this._revision;
