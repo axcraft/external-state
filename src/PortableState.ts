@@ -11,19 +11,13 @@ export class PortableState<Value, Payload extends EventPayload = EventPayload> {
   _previous: Value;
   _callbacks: Record<string, Set<EventCallback<Payload>>> = {};
   _revision = -1;
-  _active = false;
+  _active = true;
   eventAliases: Record<string, string> = {};
 
   constructor(value: Value) {
     this._current = value;
     this._previous = value;
-    this._init();
-    this.start();
   }
-  /**
-   * Sets up the instance's predefined event handlers.
-   */
-  _init() {}
   /**
    * Adds an event handler to the state.
    *

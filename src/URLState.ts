@@ -12,6 +12,7 @@ export class URLState extends PortableState<string, NavigationOptions> {
   };
   constructor(href = "") {
     super(href);
+    this._init();
   }
   _init() {
     if (typeof window === "undefined") return;
@@ -30,6 +31,7 @@ export class URLState extends PortableState<string, NavigationOptions> {
 
     this.on("start", start);
     this.on("stop", stop);
+    start();
   }
   _updatePayload(nextHref: string, payload?: NavigationOptions) {
     return {
