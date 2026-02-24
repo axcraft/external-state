@@ -1,52 +1,42 @@
 import { QuasiURL } from "quasiurl";
-import { PortableState, StateUpdate } from "./PortableState.ts";
+import { PortableState } from "./PortableState.ts";
 import { NavigationOptions } from "./types/NavigationOptions.ts";
 
 const defaultNavigationOptions: NavigationOptions = {};
 
 export class URLState extends PortableState<string, NavigationOptions> {
+  eventAliases = {
+    "navigationstart": "updatestart",
+    "navigation": "update",
+    "navigationend": "updateend",
+  };
   constructor(href = "") {
     super(href);
-
-    if (typeof window !== "undefined") {
-      let handleURLChange = () => {
-        this.setValue(window.location.href);
-      };
-
-      let start = () => {
-        window.addEventListener("popstate", handleURLChange);
-      };
-
-      let stop = () => {
-        window.removeEventListener("popstate", handleURLChange);
-      };
-
-      this.on("start", start);
-      this.on("stop", stop);
-
-      start();
-    }
   }
-  setValue(update: string | StateUpdate<string>, payload?: NavigationOptions) {
-    if (!this._active) return;
+  _init() {
+    if (typeof window === "undefined") return;
 
-    let href = this.toHref(this._resolveValue(update));
-
-    let navigationOptions = {
-      ...payload,
-      href,
-      referrer: this.current,
+    let handleURLChange = () => {
+      this.setValue(window.location.href);
     };
 
-    if (this.emit("updatestart", navigationOptions)) {
-      this._assignValue(href);
+    let start = () => {
+      window.addEventListener("popstate", handleURLChange);
+    };
 
-      if (this.emit("update", navigationOptions)) {
-        this._transition(navigationOptions);
-        this._complete(navigationOptions);
-        this.emit("updateend", navigationOptions);
-      }
-    }
+    let stop = () => {
+      window.removeEventListener("popstate", handleURLChange);
+    };
+
+    this.on("start", start);
+    this.on("stop", stop);
+  }
+  _updatePayload(nextHref: string, payload?: NavigationOptions) {
+    return {
+      ...payload,
+      href: this.toHref(nextHref),
+      referrer: this.current,
+    };
   }
   _transition(options = defaultNavigationOptions) {
     if (typeof window === "undefined" || options?.href === undefined) return;
@@ -55,14 +45,14 @@ export class URLState extends PortableState<string, NavigationOptions> {
 
     if (target && target !== "_self") {
       window.open(href, target);
-      return;
+      return false;
     }
 
     let url = new QuasiURL(href);
 
     if (spa === "off" || !window.history || (url.origin !== "" && url.origin !== window.location.origin)) {
       window.location[history === "replace" ? "replace" : "assign"](href);
-      return;
+      return false;
     }
 
     window.history[history === "replace" ? "replaceState" : "pushState"](
@@ -80,18 +70,14 @@ export class URLState extends PortableState<string, NavigationOptions> {
 
     let { hash } = new QuasiURL(String(href));
 
-    return new Promise<void>((resolve) => {
-      requestAnimationFrame(() => {
-        let targetElement =
-          hash === ""
-            ? null
-            : document.querySelector(`${hash}, a[name="${hash.slice(1)}"]`);
+    requestAnimationFrame(() => {
+      let targetElement =
+        hash === ""
+          ? null
+          : document.querySelector(`${hash}, a[name="${hash.slice(1)}"]`);
 
-        if (targetElement) targetElement.scrollIntoView();
-        else window.scrollTo(0, 0);
-
-        resolve();
-      });
+      if (targetElement) targetElement.scrollIntoView();
+      else window.scrollTo(0, 0);
     });
   }
   toHref(x: string) {

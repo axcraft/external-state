@@ -11,12 +11,19 @@ export class PortableState<Value, Payload extends EventPayload = EventPayload> {
   _previous: Value;
   _callbacks: Record<string, Set<EventCallback<Payload>>> = {};
   _revision = -1;
-  _active = true;
+  _active = false;
+  eventAliases: Record<string, string> = {};
 
   constructor(value: Value) {
     this._current = value;
     this._previous = value;
+    this._init();
+    this.start();
   }
+  /**
+   * Sets up the instance's predefined event handlers.
+   */
+  _init() {}
   /**
    * Adds an event handler to the state.
    *
@@ -28,7 +35,9 @@ export class PortableState<Value, Payload extends EventPayload = EventPayload> {
    * the state emits the corresponding event.
    */
   on(event: string, callback: EventCallback<Payload>) {
-    (this._callbacks[event] ??= new Set<EventCallback<Payload>>()).add(callback);
+    let effectiveEvent = this.eventAliases[event] ?? event;
+
+    (this._callbacks[effectiveEvent] ??= new Set<EventCallback<Payload>>()).add(callback);
 
     return () => this.off(event, callback);
   }
@@ -50,8 +59,10 @@ export class PortableState<Value, Payload extends EventPayload = EventPayload> {
    * specified.
    */
   off(event: string, callback?: EventCallback<Payload>) {
-    if (callback === undefined) delete this._callbacks[event];
-    else this._callbacks[event]?.delete(callback);
+    let effectiveEvent = this.eventAliases[event] ?? event;
+
+    if (callback === undefined) delete this._callbacks[effectiveEvent];
+    else this._callbacks[effectiveEvent]?.delete(callback);
   }
   /**
    * Emits the specified event. Returns `false` if at least one event callback
@@ -59,7 +70,8 @@ export class PortableState<Value, Payload extends EventPayload = EventPayload> {
    * Otherwise returns `true`.
    */
   emit(event: string, payload?: Payload) {
-    let callbacks = this._callbacks[event];
+    let effectiveEvent = this.eventAliases[event] ?? event;
+    let callbacks = this._callbacks[effectiveEvent];
 
     if (this._active && callbacks?.size) {
       for (let callback of callbacks) {
@@ -84,10 +96,36 @@ export class PortableState<Value, Payload extends EventPayload = EventPayload> {
    * that returns a new state value based on the current state value.
    */
   setValue(update: Value | StateUpdate<Value>, payload?: Payload): void {
-    if (this._active && this.emit("updatestart", payload)) {
-      this._assignValue(this._resolveValue(update));
-      if (this.emit("update", payload)) this.emit("updateend", payload);
+    if (!this.active) return;
+
+    let nextValue = this._resolveValue(update);
+    let updatedPayload = this._updatePayload(nextValue, payload);
+
+    if (
+      this.emit("updatestart", updatedPayload) &&
+      this._transition(updatedPayload) !== false
+    ) {
+      this._assignValue(nextValue);
+
+      if (this.emit("update", updatedPayload)) {
+        this._complete(updatedPayload);
+        this.emit("updateend", updatedPayload);
+      }
     }
+  }
+  _updatePayload(_nextValue: Value, payload?: Payload): Payload | undefined {
+    return payload;
+  }
+  /**
+   * Applies a state value change to an external system.
+   * Returns `false` when the transition doesn't result in actual changes
+   * in the current session.
+   */
+  _transition(_payload?: Payload): boolean | undefined | void {
+    return true;
+  }
+  _complete(_payload?: Payload): boolean | undefined | void {
+    return true;
   }
   get current(): Value {
     return this._current;
