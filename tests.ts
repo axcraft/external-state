@@ -1,4 +1,4 @@
-import { ExternalState, isExternalState } from "./index.ts";
+import { State, isState } from "./index.ts";
 
 let testIndex = 0;
 
@@ -15,7 +15,7 @@ function assert(value: unknown, expectedValue: unknown) {
   }
 }
 
-let state = new ExternalState(10);
+let state = new State(10);
 
 let testValue = [100, -3];
 let unsubscribe = [
@@ -27,8 +27,8 @@ let unsubscribe = [
   }),
 ];
 
-assert(isExternalState(state), true);
-assert(isExternalState({}), false);
+assert(isState(state), true);
+assert(isState({}), false);
 
 assert(state.getValue(), 10);
 assert(state._callbacks.update?.size, 2);

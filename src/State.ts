@@ -21,7 +21,7 @@ export type EventPayloadMap<T> = EventPayloadMapShape<{
 /**
  * Data container allowing for subscription to its updates.
  */
-export class ExternalState<
+export class State<
   T,
   P extends EventPayloadMap<T> = EventPayloadMap<T>,
 > {
