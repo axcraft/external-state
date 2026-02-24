@@ -9,8 +9,7 @@
   "scripts": {
     "preversion": "npx npm-run-all shape test",
     "shape": "npx codeshape",
-    "test": "node tests.ts",
-    "typecheck": "npx codeshape --typecheck-only"
+    "test": "node tests.ts"
   },
   "repository": {
     "type": "git",
@@ -23,8 +22,5 @@
     "state management"
   ],
   "author": "axtk",
-  "license": "MIT",
-  "dependencies": {
-    "quasiurl": "^1.1.12"
-  }
+  "license": "MIT"
 }

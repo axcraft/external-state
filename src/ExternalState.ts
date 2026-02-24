@@ -1,5 +1,8 @@
-import type { EventCallback } from "./types/EventCallback.ts";
-import type { EventPayload } from "./types/EventPayload.ts";
+export type EventPayload = Record<string, unknown>;
+
+export type EventCallback<T extends EventPayload> = (
+  event: T | undefined,
+) => boolean | undefined | void;
 
 export type StateUpdate<T> = (value: T) => T;
 

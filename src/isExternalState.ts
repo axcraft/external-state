@@ -1,8 +1,8 @@
 import type { ExternalState } from "./ExternalState.ts";
 
 /**
- * Serves as a replacement to `instanceof State` which can lead to a false
- * negative when the `State` class comes from different package dependencies.
+ * Serves as a replacement to `instanceof ExternalState` which can lead to
+ * a false negative when `ExternalState` comes from transitive dependencies.
  */
 export function isExternalState<T>(x: unknown): x is ExternalState<T> {
   return (
