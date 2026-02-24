@@ -1,10 +1,72 @@
 import { QuasiURL } from "quasiurl";
 import type { NavigationOptions } from "./types/NavigationOptions.ts";
 import { URLState } from "./URLState.ts";
+import { isRouteEvent } from "./utils/isRouteEvent.ts";
+import { LinkElement } from "./types/LinkElement.ts";
+import { getNavigationOptions } from "./utils/getNavigationOptions.ts";
+
+export type ContainerElement = Document | Element | null | undefined;
+export type ElementCollection = (string | Node)[] | HTMLCollection | NodeList;
+
+let isElementCollection = (x: unknown): x is ElementCollection =>
+  Array.isArray(x) || x instanceof NodeList || x instanceof HTMLCollection;
+
+let isLinkElement = (x: unknown): x is LinkElement =>
+  x instanceof HTMLAnchorElement || x instanceof HTMLAreaElement;
 
 export class Route extends URLState {
   navigate(options?: NavigationOptions) {
     if (options?.href) this.setValue(options.href, options);
+  }
+  observe(
+    container: ContainerElement | (() => ContainerElement),
+    elements:
+      | string
+      | Node
+      | (string | Node)[]
+      | HTMLCollection
+      | NodeList = "a, area",
+  ) {
+    let handleClick = (event: MouseEvent) => {
+      if (!this._active || event.defaultPrevented || !isRouteEvent(event)) return;
+
+      let resolvedContainer =
+        typeof container === "function" ? container() : container;
+  
+      if (!resolvedContainer) return;
+  
+      let element: HTMLAnchorElement | HTMLAreaElement | null = null;
+      let targetElements = isElementCollection(elements)
+        ? Array.from(elements)
+        : [elements];
+  
+      for (let targetElement of targetElements) {
+        let target: Node | null = null;
+  
+        if (typeof targetElement === "string")
+          target =
+            event.target instanceof HTMLElement
+              ? event.target.closest(targetElement)
+              : null;
+        else target = targetElement;
+  
+        if (isLinkElement(target) && resolvedContainer.contains(target)) {
+          element = target;
+          break;
+        }
+      }
+  
+      if (element) {
+        event.preventDefault();
+        this.navigate(getNavigationOptions(element));
+      }
+    };
+  
+    document.addEventListener("click", handleClick);
+  
+    return () => {
+      document.removeEventListener("click", handleClick);
+    };
   }
   assign(url: string) {
     this.navigate({ href: url });
