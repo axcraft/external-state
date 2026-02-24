@@ -15,10 +15,7 @@ export type EventPayloadMap<T> = Record<string, void> & {
 /**
  * Data container allowing for subscription to its updates.
  */
-export class State<
-  T,
-  P extends EventPayloadMap<T> = EventPayloadMap<T>,
-> {
+export class State<T, P extends EventPayloadMap<T> = EventPayloadMap<T>> {
   _value: T;
   _callbacks: EventCallbackMap<P> = {};
   _revision = -1;

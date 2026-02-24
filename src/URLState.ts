@@ -1,5 +1,5 @@
 import { QuasiURL } from "quasiurl";
-import { EventPayloadMap, State, StateUpdate } from "./State.ts";
+import { type EventPayloadMap, State, type StateUpdate } from "./State.ts";
 import type { NavigationOptions } from "./types/NavigationOptions.ts";
 
 const defaultNavigationOptions: NavigationOptions = {};

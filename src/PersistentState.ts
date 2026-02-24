@@ -1,8 +1,9 @@
-import { EventPayloadMap, State } from "./State.ts";
+import { type EventPayloadMap, State } from "./State.ts";
 import type { PersistentStorage } from "./types/PersistentStorage.ts";
 
 function getStorage(session = false) {
-  if (typeof window !== "undefined") return session ? sessionStorage : localStorage;
+  if (typeof window !== "undefined")
+    return session ? sessionStorage : localStorage;
 }
 
 export type StorageEntryOptions<T> = {
@@ -64,7 +65,8 @@ export class PersistentState<
   ) {
     super(value);
 
-    let { read, write } = "read" in options ? options : getStorageEntry(options);
+    let { read, write } =
+      "read" in options ? options : getStorageEntry(options);
 
     let update = (value: T | null) => {
       if (value === null) write?.(this.getValue());
