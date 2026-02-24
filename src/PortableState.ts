@@ -96,7 +96,7 @@ export class PortableState<Value, Payload extends EventPayload = EventPayload> {
    * that returns a new state value based on the current state value.
    */
   setValue(update: Value | StateUpdate<Value>, payload?: Payload): void {
-    if (!this.active) return;
+    if (!this._active) return;
 
     let nextValue = this._resolveValue(update);
     let updatedPayload = this._updatePayload(nextValue, payload);
