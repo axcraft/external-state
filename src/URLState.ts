@@ -92,7 +92,8 @@ export class URLState extends State<string, PayloadMap> {
       typeof window === "undefined" ||
       options?.href === undefined ||
       options?.source === "popstate"
-    ) return;
+    )
+      return;
 
     let { href, target, spa, history } = options;
 

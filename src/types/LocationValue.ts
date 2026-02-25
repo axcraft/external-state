@@ -1,5 +1,5 @@
-import type { URLConfig } from "./URLConfig.ts";
 import type { LocationObject } from "./LocationObject.ts";
+import type { URLConfig } from "./URLConfig.ts";
 
 export type LocationValue = URLConfig["strict"] extends true
   ? LocationObject | undefined

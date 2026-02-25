@@ -1,13 +1,13 @@
 import { QuasiURL } from "quasiurl";
 import type { LinkElement } from "./types/LinkElement.ts";
+import type { LocationPattern } from "./types/LocationPattern.ts";
+import type { LocationValue } from "./types/LocationValue.ts";
+import type { MatchHandler } from "./types/MatchHandler.ts";
 import type { NavigationOptions } from "./types/NavigationOptions.ts";
 import { URLState } from "./URLState.ts";
 import { getNavigationOptions } from "./utils/getNavigationOptions.ts";
 import { isRouteEvent } from "./utils/isRouteEvent.ts";
-import { LocationPattern } from "./types/LocationPattern.ts";
-import { MatchHandler } from "./types/MatchHandler.ts";
 import { matchURL } from "./utils/matchURL.ts";
-import { LocationValue } from "./types/LocationValue.ts";
 
 export type ContainerElement = Document | Element | null | undefined;
 export type ElementCollection = (string | Node)[] | HTMLCollection | NodeList;
@@ -97,7 +97,7 @@ export class Route extends URLState {
   }
   navigate(options?: NavigationOptions<LocationValue>) {
     if (!options?.href) return;
-  
+
     let { href, referrer, ...params } = options;
 
     // Stringify `LocationValue` URLs in `options`

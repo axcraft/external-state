@@ -11,14 +11,19 @@ route.on("navigationcomplete", () => {
 route.observe(document);
 
 function renderHeader() {
-  document.querySelector("header")!.className = route.at("/", "full", "compact");
+  document.querySelector("header")!.className = route.at(
+    "/",
+    "full",
+    "compact",
+  );
 }
 
 function renderMainContent() {
   let { ok: isSection, params } = route.match(/^\/sections\/(?<id>\d+)\/?/);
 
   if (isSection)
-    document.querySelector('[data-id="section"] h2 span')!.textContent = params.id ?? "";
+    document.querySelector('[data-id="section"] h2 span')!.textContent =
+      params.id ?? "";
 
   document
     .querySelector('main[data-id="intro"]')!
