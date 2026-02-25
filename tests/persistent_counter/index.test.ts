@@ -1,4 +1,4 @@
-import { expect, Locator, type Page, test } from "@playwright/test";
+import { expect, type Locator, type Page, test } from "@playwright/test";
 import { type Server, serve } from "auxsrv";
 
 class Playground {
@@ -48,7 +48,7 @@ test.describe("counter", () => {
     await p.plus.click();
     await expect(p.output).toHaveText("1");
   });
-  
+
   test("update and reload", async ({ page }) => {
     let p = new Playground(page);
 

@@ -1,7 +1,9 @@
-import { EventCallback } from "./types/EventCallback.ts";
-import { EventCallbackMap } from "./types/EventCallbackMap.ts";
+import type { EventCallback } from "./types/EventCallback.ts";
+import type { EventCallbackMap } from "./types/EventCallbackMap.ts";
 
-export class EventEmitter<P extends Record<string, unknown> = Record<string, void>> {
+export class EventEmitter<
+  P extends Record<string, unknown> = Record<string, void>,
+> {
   _callbacks: EventCallbackMap<P> = {};
   _active = true;
   /**

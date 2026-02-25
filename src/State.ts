@@ -12,7 +12,10 @@ export type EventPayloadMap<T> = Record<string, void> & {
 /**
  * Data container allowing for subscription to its updates.
  */
-export class State<T, P extends EventPayloadMap<T> = EventPayloadMap<T>> extends EventEmitter<P> {
+export class State<
+  T,
+  P extends EventPayloadMap<T> = EventPayloadMap<T>,
+> extends EventEmitter<P> {
   _value: T;
   _revision = -1;
   constructor(value: T) {
