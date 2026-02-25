@@ -5,10 +5,12 @@ import type { NavigationOptions } from "./types/NavigationOptions.ts";
 
 type PayloadMap = EventPayloadMap<string> & {
   navigationstart: NavigationOptions;
+  // Similar to the "update" event, but with a `NavigationOptions` payload
+  navigation: NavigationOptions;
   navigationcomplete: NavigationOptions;
 };
 
-function isNavigationEvent(
+function isImmediatelyInvoked(
   event: string,
 ): event is "navigationstart" | "navigationcomplete" {
   return event === "navigationstart" || event === "navigationcomplete";
@@ -47,7 +49,7 @@ export class URLState extends State<string, PayloadMap> {
     // soon as they are added to adjust to the current URL state.
     if (
       this._active &&
-      isNavigationEvent(event) &&
+      isImmediatelyInvoked(event) &&
       invokeImmediately !== false
     ) {
       let payload: NavigationOptions = {
@@ -78,6 +80,7 @@ export class URLState extends State<string, PayloadMap> {
       this._transition(extendedOptions) !== false
     ) {
       this._assignValue(href);
+      this.emit("navigation", extendedOptions);
 
       if (this.emit("navigationcomplete", extendedOptions))
         this._complete(extendedOptions);
