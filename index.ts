@@ -17,4 +17,4 @@ export * from "./src/URLState.ts";
 export * from "./src/utils/getNavigationOptions.ts";
 export * from "./src/utils/isLocationObject.ts";
 export * from "./src/utils/isRouteEvent.ts";
-export * from "./src/utils/match.ts";
+export * from "./src/utils/matchURL.ts";

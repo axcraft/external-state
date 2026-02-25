@@ -6,7 +6,7 @@ import { getNavigationOptions } from "./utils/getNavigationOptions.ts";
 import { isRouteEvent } from "./utils/isRouteEvent.ts";
 import { LocationPattern } from "./types/LocationPattern.ts";
 import { MatchHandler } from "./types/MatchHandler.ts";
-import { match } from "./utils/match.ts";
+import { matchURL } from "./utils/matchURL.ts";
 
 export type ContainerElement = Document | Element | null | undefined;
 export type ElementCollection = (string | Node)[] | HTMLCollection | NodeList;
@@ -150,7 +150,7 @@ export class Route extends URLState {
    * Matches the current location against `urlPattern`.
    */
   match<P extends LocationPattern>(urlPattern: P) {
-    return match<P>(urlPattern, this.href);
+    return matchURL<P>(urlPattern, this.href);
   }
   /**
    * Checks whether `urlPattern` matches the current URL and returns either

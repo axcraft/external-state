@@ -76,7 +76,7 @@ function matchPattern<P extends LocationPattern>(pattern: P, href: string) {
   };
 }
 
-export function match<P extends LocationPattern>(
+export function matchURL<P extends LocationPattern>(
   pattern: P,
   href: string,
 ): MatchState<P> {
