@@ -40,7 +40,7 @@ export class URLState extends State<string, URLStatePayloadMap> {
     this.on("stop", stop);
     start();
   }
-  on<E extends keyof URLStatePayloadMap>(event: E, callback: EventCallback<URLStatePayloadMap[E]>) {
+  on<E extends string>(event: E, callback: EventCallback<URLStatePayloadMap[E]>) {
     if (isImmediatelyInvokedEvent(event))
       callback({ href: this.getValue() } as URLStatePayloadMap[typeof event]);
 

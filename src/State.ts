@@ -33,7 +33,7 @@ export class State<
     super();
     this._value = value;
   }
-  on<E extends keyof P>(event: E, callback: EventCallback<P[E]>) {
+  on<E extends string>(event: E, callback: EventCallback<P[E]>) {
     if (isImmediatelyInvokedEvent(event)) {
       let current = this.getValue();
 
