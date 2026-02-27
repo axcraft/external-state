@@ -1,4 +1,5 @@
 import { EventEmitter } from "./EventEmitter.ts";
+import { EventCallback } from "./types/EventCallback.ts";
 
 export type StateUpdate<T> = (value: T) => T;
 
@@ -32,22 +33,14 @@ export class State<
     super();
     this._value = value;
   }
-  getImmediateInvocation<E extends keyof P>(
-    event: E,
-  ): { ok: boolean; payload?: P[E] } {
+  on<E extends keyof P>(event: E, callback: EventCallback<P[E]>) {
     if (isImmediatelyInvokedEvent(event)) {
       let current = this.getValue();
 
-      return {
-        ok: true,
-        payload: {
-          current,
-          previous: current,
-        } as P[typeof event],
-      };
+      callback({ current, previous: current } as P[typeof event]);
     }
 
-    return super.getImmediateInvocation(event);
+    return super.on(event, callback);
   }
   getValue() {
     return this._value;
