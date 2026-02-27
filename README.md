@@ -20,7 +20,7 @@ Roughly, their purpose boils down to the following:
 
 ## `State`
 
-Purpose: dynamic data sharing without tight coupling.
+A thin data container for dynamic data sharing without tight coupling.
 
 ```js
 import { State } from "sidestate";
