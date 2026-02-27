@@ -32,7 +32,9 @@ export class State<
     super();
     this._value = value;
   }
-  getImmediateInvocation<E extends keyof P>(event: E): { ok: boolean; payload?: P[E] } {
+  getImmediateInvocation<E extends keyof P>(
+    event: E,
+  ): { ok: boolean; payload?: P[E] } {
     if (isImmediatelyInvokedEvent(event)) {
       let current = this.getValue();
 
