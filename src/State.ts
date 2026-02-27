@@ -2,16 +2,22 @@ import { EventEmitter } from "./EventEmitter.ts";
 
 export type StateUpdate<T> = (value: T) => T;
 
-export type StateUpdateOptions<T> = {
+export type StateUpdatePayload<T> = {
   previous: T;
   current: T;
 };
 
 export type StatePayloadMap<T> = Record<string, void> & {
-  update: StateUpdateOptions<T>;
+  update: StateUpdatePayload<T>;
+  // Similar to "update", but its callback is also immediately invoked when added
+  set: StateUpdatePayload<T>;
   start: void;
   stop: void;
 };
+
+function isImmediatelyInvokedEvent(event: unknown): event is "set" {
+  return event === "set";
+}
 
 /**
  * Data container allowing for subscription to its updates.
@@ -25,6 +31,21 @@ export class State<
   constructor(value: T) {
     super();
     this._value = value;
+  }
+  getImmediateInvocation<E extends keyof P>(event: E) {
+    if (isImmediatelyInvokedEvent(event)) {
+      let current = this.getValue();
+
+      return {
+        ok: true,
+        payload: {
+          current,
+          previous: current,
+        } as P[typeof event],
+      };
+    }
+
+    return super.getImmediateInvocation(event);
   }
   getValue() {
     return this._value;
@@ -49,6 +70,10 @@ export class State<
     this._revision = Math.random();
 
     this.emit("update", { previous, current });
+
+    // Unlike "update" callbacks, "set" callbacks are also immediately
+    // invoked when added
+    this.emit("set", { previous, current });
   }
   get revision() {
     return this._revision;

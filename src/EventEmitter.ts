@@ -12,10 +12,18 @@ export class EventEmitter<
    * Returns an unsubscription function. Once it's invoked, the given
    * `callback` is removed and no longer called in response to the event.
    */
-  on<E extends keyof P>(event: E, callback: EventCallback<P[E]>) {
+  on<E extends keyof P>(event: E, callback: EventCallback<P[E]>, invokeImmediately?: boolean) {
+    let { ok, payload } = this.getImmediateInvocation(event);
+
+    if (this._active && ok && invokeImmediately !== false)
+      callback(payload!);
+
     (this._callbacks[event] ??= new Set()).add(callback);
 
     return () => this.off(event, callback);
+  }
+  getImmediateInvocation<E extends keyof P>(_event: E): { ok: boolean; payload?: P[E] } {
+    return { ok: false };
   }
   /**
    * Adds a one-time event handler: once the event is emitted, the callback
