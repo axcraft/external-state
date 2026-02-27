@@ -1,13 +1,13 @@
 # sidestate
 
-Vanilla TS/JS state management for data sharing across decoupled parts of the code and routing. Routing is essentially shared state management, too, with the shared state being the URL.
+Vanilla TS/JS state management for data sharing across decoupled parts of the code and routing. Routing is essentially shared state management, too, with the shared data being the URL.
 
 This package exposes the following classes:
 
 ```
-EventEmitter ───► State ───► PersistentState
+EventEmitter ──► State ──► PersistentState
                     │
-                    └──────► URLState ───► Route
+                    └────► URLState ──► Route
 ```
 
 Roughly, their purpose boils down to the following:
@@ -40,7 +40,7 @@ In this example, a button changes a counter value and an `<output>` element show
 
 ## `PersistentState`
 
-Similar to `State`. Additionally, it syncs its data to the browser storage and restores it on page reload.
+A variety of `State` that syncs its data to the browser storage and restores it on page reload. Otherwise, almost identical to `State` in usage.
 
 ```js
 import { PersistentState } from "sidestate";
@@ -54,7 +54,7 @@ counterState.on("update", ({ current }) => {
 counterState.emit("sync");
 ```
 
-By default, `PersistentState` stores its data at the specified `key` in `localStorage` and transforms the data with `JSON.stringify()` and `JSON.parse()`. Switch to `sessionStorage` by setting `session: true` in the constructor's second parameter. Set custom `serialize()` and `deserialize()` to override the default data transforms.
+By default, `PersistentState` stores its data at the specified `key` in `localStorage` and transforms the data with `JSON.stringify()` and `JSON.parse()`. Switch to `sessionStorage` by setting `options.session` to `true` in `new PersistentState(value, options)`. Set custom `options.serialize()` and `options.deserialize()` to override the default data transforms.
 
 Emit the `"sync"` event to signal the state to update its value from the browser storage, which can be done once or multiple times after creating the state. If it's desirable to sync the state once regardless of the number of sync calls (possibly coming from multiple independent parts of the code), a `"synconce"` event can be used instead.
 
@@ -105,16 +105,19 @@ document.querySelector("h1").textContent = route.at(
 );
 ```
 
-Convert links to SPA links inside the specified container (or the entire `document`):
+Enable SPA navigation with HTML links inside the specified container (or the entire `document`) without any changes to the HTML:
 
 ```js
 route.observe(document);
 ```
 
-Tweak the links' navigation behavior by setting their optional `data-` attributes (corresponding to the `route.navigate()` options):
+Tweak the links' navigation behavior by adding a relevant combination of the optional `data-` attributes (corresponding to the `route.navigate()` options):
 
 ```html
-<a href="/intro" data-history="replace" data-scroll="off" data-spa="off">Intro</a>
+<a href="/intro">Intro</a>
+<a href="/intro" data-history="replace">Intro</a>
+<a href="/intro" data-scroll="off">Intro</a>
+<a href="/intro" data-spa="off">Intro</a>
 ```
 
 Define what should be done when the URL changes:
