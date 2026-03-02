@@ -16,6 +16,14 @@ export type StatePayloadMap<T> = Record<string, void> & {
   stop: void;
 };
 
+export type StateOptions = {
+  /**
+   * Whether to call `start()` at initialization.
+   * @default true
+   */
+  autoStart?: boolean;
+};
+
 function isImmediatelyInvokedEvent(event: unknown): event is "set" {
   return event === "set";
 }
@@ -29,12 +37,16 @@ export class State<
 > extends EventEmitter<P> {
   _value: T;
   _revision = -1;
+  _active = false;
   // For immediately invoked event callbacks added during inactivity
   _queue: (() => void)[] = [];
-  constructor(value: T) {
+  constructor(value: T, options?: StateOptions) {
     super();
     this._value = value;
-
+    this._init();
+    if (options?.autoStart !== false) this.start();
+  }
+  _init() {
     this.on("effect", () => {
       this.start();
     });

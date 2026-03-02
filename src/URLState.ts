@@ -1,5 +1,10 @@
 import { QuasiURL } from "quasiurl";
-import { State, type StatePayloadMap, type StateUpdate } from "./State.ts";
+import {
+  State,
+  type StateOptions,
+  type StatePayloadMap,
+  type StateUpdate,
+} from "./State.ts";
 import type { EventCallback } from "./types/EventCallback.ts";
 import type { NavigationOptions } from "./types/NavigationOptions.ts";
 
@@ -17,12 +22,12 @@ function isImmediatelyInvokedEvent(
 }
 
 export class URLState extends State<string, URLStatePayloadMap> {
-  _active = false;
-  constructor(href = "") {
-    super(href);
-    this._init();
+  constructor(href: string | null = null, options?: StateOptions) {
+    super(href ?? "", options);
   }
   _init() {
+    super._init();
+
     if (typeof window === "undefined") return;
 
     let handleURLChange = () => {

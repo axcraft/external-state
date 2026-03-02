@@ -1,4 +1,5 @@
 import { QuasiURL } from "quasiurl";
+import type { StateOptions } from "./State.ts";
 import type { LinkElement } from "./types/LinkElement.ts";
 import type { LocationPattern } from "./types/LocationPattern.ts";
 import type { LocationValue } from "./types/LocationValue.ts";
@@ -29,11 +30,13 @@ let isLinkElement = (x: unknown): x is LinkElement =>
 
 export class Route extends URLState {
   _clicks = new Set<(event: MouseEvent) => void>();
-  constructor(href: LocationValue = "") {
-    super(String(href));
+  constructor(href: LocationValue | null = null, options?: StateOptions) {
+    super(String(href ?? ""), options);
   }
   _init() {
     super._init();
+
+    if (typeof window === "undefined") return;
 
     let handleClick = (event: MouseEvent) => {
       for (let callback of this._clicks) callback(event);

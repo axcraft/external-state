@@ -1,4 +1,4 @@
-import { State, type StatePayloadMap } from "./State.ts";
+import { State, type StateOptions, type StatePayloadMap } from "./State.ts";
 import type { PersistentStorage } from "./types/PersistentStorage.ts";
 
 function getStorage(session = false) {
@@ -52,7 +52,6 @@ export class PersistentState<
   T,
   P extends PersistentStatePayloadMap<T> = PersistentStatePayloadMap<T>,
 > extends State<T, P> {
-  _active = false;
   /**
    * @param value - Initial state value.
    * @param options - Either of the following:
@@ -67,9 +66,9 @@ export class PersistentState<
    */
   constructor(
     value: T,
-    options: StorageEntryOptions<T> | PersistentStorage<T>,
+    options: (StorageEntryOptions<T> | PersistentStorage<T>) & StateOptions,
   ) {
-    super(value);
+    super(value, { autoStart: false });
 
     let { read, write } =
       "read" in options ? options : getStorageEntry(options);
@@ -94,5 +93,7 @@ export class PersistentState<
 
     this.on("sync", sync);
     this.on("start", sync);
+
+    if (options?.autoStart !== false) this.start();
   }
 }
