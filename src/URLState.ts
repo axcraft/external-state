@@ -34,16 +34,13 @@ export class URLState extends State<string, URLStatePayloadMap> {
       this.setValue(window.location.href, { source: "popstate" });
     };
 
-    let start = () => {
+    this.on("start", () => {
       window.addEventListener("popstate", handleURLChange);
-    };
+    });
 
-    let stop = () => {
+    this.on("stop", () => {
       window.removeEventListener("popstate", handleURLChange);
-    };
-
-    this.on("start", start);
-    this.on("stop", stop);
+    });
   }
   on<E extends string>(
     event: E,

@@ -42,16 +42,13 @@ export class Route extends URLState {
       for (let callback of this._clicks) callback(event);
     };
 
-    let start = () => {
+    this.on("start", () => {
       document.addEventListener("click", handleClick);
-    };
+    });
 
-    let stop = () => {
+    this.on("stop", () => {
       document.removeEventListener("click", handleClick);
-    };
-
-    this.on("start", start);
-    this.on("stop", stop);
+    });
   }
   observe(
     container: ContainerElement | (() => ContainerElement),
