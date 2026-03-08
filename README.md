@@ -1,6 +1,6 @@
 # sidestate
 
-Vanilla TS/JS state management for data sharing across decoupled parts of the code and routing. Routing is essentially shared state management, too, with the shared data being the URL.
+Vanilla TS/JS state management for sharing data across decoupled parts of the code and routing. Routing is essentially shared state management, too, with the shared data being the URL.
 
 This package exposes the following classes:
 
@@ -13,7 +13,7 @@ EventEmitter ──► State ──► PersistentState
 Roughly, their purpose boils down to the following:
 
 - `EventEmitter` is for triggering actions without tightly coupling the interacting components
-- `State` is `EventEmitter` that stores data and emits an event when the data gets updated, for dynamic data sharing without tight coupling
+- `State` is `EventEmitter` that stores data and emits an event when the data gets updated, it's for dynamic data sharing without tight coupling
 - `PersistentState` is `State` that syncs its data to the browser storage and restores it on page reload
 - `URLState` is `State` that stores the URL + syncs with the browser's URL in a SPA fashion
 - `Route` is `URLState` + native-like APIs for SPA navigation and an API for URL matching
@@ -141,7 +141,7 @@ Define what should be done before the URL changes (in a way effectively similar 
 ```js
 route.on("navigationstart", ({ href }) => {
   if (hasUnsavedInput)
-    return false; // Preventing navigation
+    return false; // Quit the navigation, prevent the current URL change
 
   if (href === "/") {
     route.href = "/intro"; // SPA redirection
